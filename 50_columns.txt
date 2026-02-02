@@ -1,0 +1,54 @@
+    biz_id              INT,            -- 1
+    user_id             BIGINT,         -- 2
+    channel_code        CHAR(10),        -- 3
+    event_date          DATE,            -- 4
+    order_id            BIGINT,          -- 5
+    product_id          BIGINT,          -- 6
+    shop_id             BIGINT,          -- 7
+    category_id         BIGINT,          -- 8
+    brand_id            BIGINT,          -- 9
+    device_id           VARCHAR(64),     -- 10
+    session_id          VARCHAR(64),     -- 11
+    region_code         CHAR(6),          -- 12
+    city_code           CHAR(6),          -- 13
+    platform            VARCHAR(20),     -- 14
+    os_type             CHAR(10),         -- 15
+    app_version         VARCHAR(20),     -- 16
+    network_type        VARCHAR(20),     -- 17
+    user_level          INT,              -- 18
+    gender              TINYINT,          -- 19
+    age                 SMALLINT,         -- 20
+    vip_flag            BOOLEAN,          -- 21
+    risk_level          TINYINT,          -- 22
+    event_datetime      DATETIME,         -- 23
+    order_datetime      DATETIME,         -- 24
+    pay_datetime        DATETIME,         -- 25
+    create_time         DATETIME,         -- 26
+    update_time         DATETIME,         -- 27
+    etl_time            DATETIME,         -- 28
+    order_amount        DECIMAL(18,2),    -- 29
+    pay_amount          DECIMAL(18,2),    -- 30
+    discount_amount     DECIMAL(18,2),    -- 31
+    refund_amount       DECIMAL(18,2),    -- 32
+    cost_amount         DECIMAL(18,2),    -- 33
+    profit_amount       DECIMAL(18,2),    -- 34
+    item_cnt            INT,              -- 35
+    sku_cnt             INT,              -- 36
+    order_cnt           INT,              -- 37
+    refund_cnt          INT,              -- 38
+    stay_time           BIGINT,           -- 39
+    score               DOUBLE,           -- 40
+    credit_score        DOUBLE,           -- 41
+    risk_score          DOUBLE,           -- 42
+    is_new_user         BOOLEAN,          -- 43
+    user_tag            VARCHAR(50),      -- 44
+    remark              STRING,           -- 45
+    trace_id            VARCHAR(64),      -- 46
+    product_id_list     ARRAY<BIGINT>,    -- 47  ARRAY
+    ext_kv_map          MAP<STRING, STRING>, -- 48  MAP
+    user_profile        STRUCT<             -- 49  STRUCT
+                            age INT,
+                            gender STRING,
+                            level INT
+                        >,
+    ext_json            JSON              -- 50  JSON
