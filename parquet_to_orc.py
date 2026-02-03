@@ -100,19 +100,41 @@ class ParquetToOrcConverter:
             
             for i, field in enumerate(schema):
                 array = table.column(i)
-                # 如果是二进制类型，转换为字符串类型
+                # 如果是二进制类型，尝试转换为字符串类型
                 if pa.types.is_binary(field.type) or pa.types.is_large_binary(field.type):
+                    # 先检查是否可以安全地解码为UTF-8字符串
                     # 将二进制数据解码为UTF-8字符串
                     # 使用 to_pylist 转换为 Python 对象，然后创建字符串数组
                     try:
-                        decoded_values = [val.decode('utf-8') if val is not None else None for val in array.to_pylist()]
-                        new_array = pa.array(decoded_values, type=pa.string())
-                        new_arrays.append(new_array)
-                        new_fields.append(pa.field(field.name, pa.string(), nullable=field.nullable, metadata=field.metadata))
-                        need_conversion = True
-                        converted_columns.append(field.name)
-                        logger.debug(f"将列 {field.name} 从 {field.type} 转换为 string 类型")
+                        decoded_values = []
+                        can_decode = True
+                        for val in array.to_pylist():
+                            if val is None:
+                                decoded_values.append(None)
+                            else:
+                                try:
+                                    # 尝试解码为UTF-8
+                                    decoded_values.append(val.decode('utf-8'))
+                                except (UnicodeDecodeError, AttributeError):
+                                    # 如果无法解码，说明这不是UTF-8编码的文本，保持原类型
+                                    can_decode = False
+                                    break
+                        
+                        if can_decode:
+                            # 所有值都可以解码，创建字符串数组
+                            new_array = pa.array(decoded_values, type=pa.string())
+                            new_arrays.append(new_array)
+                            new_fields.append(pa.field(field.name, pa.string(), nullable=field.nullable, metadata=field.metadata))
+                            need_conversion = True
+                            converted_columns.append(field.name)
+                            logger.debug(f"将列 {field.name} 从 {field.type} 转换为 string 类型")
+                        else:
+                            # 无法解码，保持原类型（不输出警告，因为这是预期的行为）
+                            new_arrays.append(array)
+                            new_fields.append(field)
+                            logger.debug(f"列 {field.name} 包含非UTF-8编码的二进制数据，保持原类型")
                     except Exception as e:
+                        # 其他异常情况，保持原类型
                         logger.warning(f"转换列 {field.name} 时出错: {e}，保持原类型")
                         new_arrays.append(array)
                         new_fields.append(field)
